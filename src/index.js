@@ -1,11 +1,14 @@
 require("dotenv").config();
 const express = require("express");
-const authRoutes = require("./routes/auth.route");
+const rootRoutes = require("./routes/index.route");
 require("./config/db.config");
 
 const app = express();
 
-app.use("/auth", authRoutes);
+// Middlewares
+require("./middlewares/index.middlewares")(app);
+
+app.use("/api/v1", rootRoutes);
 
 const PORT = process.env.PORT || 7666;
 app.listen(PORT, () => {
