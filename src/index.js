@@ -6,7 +6,7 @@ require("./config/db.config");
 const app = express();
 
 // Middlewares
-require("./middlewares/index.middlewares")(app);
+require("./middlewares/index.middlewares")(app, express);
 
 app.use("/api/v1", rootRoutes);
 

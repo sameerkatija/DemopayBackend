@@ -1,5 +1,9 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const salt = Number(process.env.SALT_ROUND);
+const privateKey = process.env.PRIVATE_KEY;
 const UserSchema = new Schema({
   firstName: {
     type: String,
@@ -30,5 +34,20 @@ const UserSchema = new Schema({
     minLength: [8, "password must be at least 8 characters"],
   },
 });
+
+UserSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+UserSchema.methods.generateToken = function (user_id) {
+  const token = jwt.sign({ id: user_id }, privateKey);
+  return token;
+};
+
+UserSchema.methods.comparePassword = async function (hash) {
+  const auth = await bcrypt.compare(hash, this.password);
+  return auth;
+};
 
 module.exports = mongoose.model("User", UserSchema);
