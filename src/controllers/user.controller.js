@@ -1,5 +1,4 @@
 const User = require("../models/User");
-
 const sanitizedUser = (user) => ({
   ...user.toObject({ transform: true, versionKey: false }),
   password: undefined,
@@ -21,7 +20,7 @@ const signIn = async (req, res) => {
         .json({ error: "Username or password doesn't match" });
     }
     const token = await user.generateToken(user._id);
-    res.setHeader("Authorization", `${token}`);
+    res.setHeader("Authorization", token);
     return res.status(200).json({ user: sanitizedUser(user) });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -40,7 +39,8 @@ const signUp = async (req, res) => {
     const user = new User({ firstName, lastName, username, password });
     await user.save();
     const token = user.generateToken(user._id);
-    res.setHeader("Authorization", `${token}`);
+
+    res.setHeader("Authorization", token);
     delete user.password;
     return res.status(200).json({ user: sanitizedUser(user) });
   } catch (error) {

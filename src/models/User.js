@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const salt = Number(process.env.SALT_ROUND);
-const privateKey = process.env.PRIVATE_KEY;
 const UserSchema = new Schema({
   firstName: {
     type: String,
@@ -41,8 +40,13 @@ UserSchema.pre("save", async function (next) {
 });
 
 UserSchema.methods.generateToken = function (user_id) {
-  const token = jwt.sign({ id: user_id }, privateKey);
-  return token;
+  const privateKey = String(process.env.PRIVATE_KEY).trim();
+  const token = jwt.sign({ id: user_id }, privateKey, {
+    expiresIn: "1h",
+    algorithm: "HS256",
+  });
+
+  return `Bearer ${token}`;
 };
 
 UserSchema.methods.comparePassword = async function (hash) {
