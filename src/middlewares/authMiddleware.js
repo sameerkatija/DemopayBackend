@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader && authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized - Missing token" });
+    return res.status(401).json({ error: "Unauthorized - Missing token" });
   }
   const privateKey = String(process.env.PRIVATE_KEY).trim();
   const token = authHeader.split(" ")[1];
