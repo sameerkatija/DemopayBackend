@@ -1,3 +1,4 @@
+const Account = require("../models/Account");
 const User = require("../models/User");
 const sanitizedUser = (user) => ({
   ...user.toObject({ transform: true, versionKey: false }),
@@ -40,6 +41,11 @@ const signUp = async (req, res) => {
     }
     const user = new User({ firstName, lastName, username, password });
     await user.save();
+    const account = new Account({
+      user: user._id,
+      balance: 1 + Math.random() * 10000,
+    });
+    account.save();
     const token = user.generateToken(user._id);
 
     res.setHeader("Authorization", token);
